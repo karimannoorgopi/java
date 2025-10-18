@@ -1,0 +1,92 @@
+import java.sql.*;
+import java.util.Scanner;
+
+public class InsertStudentSimple {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        String url = "jdbc:mysql://localhost:3306/college";
+        String user = "root";          // your MySQL username
+        String password = "password";  // your MySQL password
+
+        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+
+            System.out.println("Enter Student Details:");
+
+            System.out.print("Enter ID (or leave blank): ");
+            String idInput = sc.nextLine().trim();
+
+            System.out.print("Enter Name: ");
+            String name = sc.nextLine().trim();
+
+            System.out.print("Enter Department: ");
+            String dept = sc.nextLine().trim();
+
+            System.out.print("Enter Email (or leave blank): ");
+            String email = sc.nextLine().trim();
+
+            System.out.print("Enter Phone: ");
+            String phone = sc.nextLine().trim();
+
+            if (!idInput.isEmpty()) {
+                PreparedStatement check = conn.prepareStatement("SELECT id FROM Student WHERE id = ?");
+                check.setString(1, idInput);
+                ResultSet rs = check.executeQuery();
+                if (rs.next()) {
+                    System.out.println("Record not inserted: ID already exists.");
+                    return;
+                }
+            }
+
+            String sql = "";
+            PreparedStatement ps = null;
+            if (!idInput.isEmpty() && !email.isEmpty()) {
+                sql = "INSERT INTO Student (id, name, department, email, phone) VALUES (?, ?, ?, ?, ?)";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, idInput);
+                ps.setString(2, name);
+                ps.setString(3, dept);
+                ps.setString(4, email);
+                ps.setString(5, phone);
+            }
+            else if (!idInput.isEmpty()) {
+                sql = "INSERT INTO Student (id, name, department, phone) VALUES (?, ?, ?, ?)";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, idInput);
+                ps.setString(2, name);
+                ps.setString(3, dept);
+                ps.setString(4, phone);
+            }
+            // Case 3: No ID, but email given
+            else if (!email.isEmpty()) {
+                sql = "INSERT INTO Student (name, department, email, phone) VALUES (?, ?, ?, ?)";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, name);
+                ps.setString(2, dept);
+                ps.setString(3, email);
+                ps.setString(4, phone);
+            }
+            else {
+                sql = "INSERT INTO Student (name, department, phone) VALUES (?, ?, ?)";
+                ps = conn.prepareStatement(sql);
+                ps.setString(1, name);
+                ps.setString(2, dept);
+                ps.setString(3, phone);
+            }
+
+            int rows = ps.executeUpdate();
+
+            if (rows > 0)
+                System.out.println("Record inserted successfully.");
+            else
+                System.out.println("Record not inserted.");
+
+        } catch (SQLIntegrityConstraintViolationException e) {
+            System.out.println("Record not inserted: Duplicate ID detected.");
+        } catch (Exception e) {
+            System.out.println("Record not inserted: " + e.getMessage());
+        } finally {
+            sc.close();
+        }
+    }
+}
