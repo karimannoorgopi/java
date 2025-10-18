@@ -1,0 +1,123 @@
+CREATE
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
+
+public class CreateRegistrationTable {
+public static void main(String[] args) {
+String url = "jdbc:mysql://localhost:3306/studentdb"; // your database name
+String user = "root"; // your MySQL username
+String password = ""; // your MySQL password (if any)
+    try {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection con = DriverManager.getConnection(url, user, password);
+        Statement stmt = con.createStatement();
+        String sql = "CREATE TABLE IF NOT EXISTS registration ("
+                + "id INT AUTO_INCREMENT PRIMARY KEY, "
+                + "name VARCHAR(100), "
+                + "phone VARCHAR(15), "
+                + "email VARCHAR(100), "
+                + "address VARCHAR(255), "
+                + "country VARCHAR(50), "
+                + "dob DATE, "
+                + "department VARCHAR(100), "
+                + "languages VARCHAR(100), "
+                + "gender VARCHAR(10), "
+                + "username VARCHAR(50), "
+                + "password VARCHAR(50))";
+        stmt.executeUpdate(sql);
+        System.out.println("Table 'registration' created successfully!");
+        con.close();
+
+    } catch (Exception e) {
+        System.out.println("Error";
+    }
+}
+}
+
+
+INSERT
+            String sql = "INSERT INTO registration (name, phone, email, address, country, dob, department, languages, gender, username, password) "
+                       + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = con.prepareStatement(sql);
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Enter Full Name: ");
+            String name = sc.nextLine();
+
+            System.out.print("Enter Username: ");
+            String username = sc.nextLine();
+
+            System.out.print("Enter Password: ");
+            String pass = sc.nextLine();
+
+            ps.setString(1, name);
+            ps.setString(2, phone);
+            ps.setString(3, email);
+      
+            ps.setString(11, pass);
+            int rows = ps.executeUpdate();
+            if (rows > 0)
+                System.out.println(" Data inserted successfully!");
+            else
+                System.out.println(" Failed to insert data.");
+
+            con.close();
+            sc.close();
+
+        } catch (Exception e) {
+            System.out.println("❌ Error: " + e.getMessage());
+        }
+    }
+}
+
+
+SELECT
+            System.out.print("Enter Phone Number to search: ");
+            String phone = sc.nextLine();
+            String sql = "SELECT * FROM registration WHERE phone = ?";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, phone);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                System.out.println("ID: " + rs.getInt("id"));
+                System.out.println("Name: " + rs.getString("name"));
+                System.out.println("Phone: " + rs.getString("phone"));
+                System.out.println("Email: " + rs.getString("email"));
+                System.out.println("Address: " + rs.getString("address"));
+                System.out.println("Country: " + rs.getString("country"));
+                System.out.println("DOB: " + rs.getDate("dob"));
+                System.out.println("Department: " + rs.getString("department"));
+                System.out.println("Languages: " + rs.getString("languages"));
+                System.out.println("Gender: " + rs.getString("gender"));
+                System.out.println("Username: " + rs.getString("username"));
+            } else {
+                System.out.println("No record found with phone number " + phone);
+            }
+            rs.close();
+            ps.close();
+            con.close();
+            sc.close();
+
+        } catch (Exception e) {
+            System.out.println("Error: ");
+        }
+    }
+}
+
+
+DELETE
+            Statement stmt = con.createStatement();
+
+            String sql = "DROP TABLE IF EXISTS registration";
+
+            // Step 5: Execute
+            stmt.executeUpdate(sql);
+
+            System.out.println("✅ Table 'registration' deleted successfully!");
+
+            // Step 6: Close connection
+            stmt.close();
+            con.close();
+
+
+
